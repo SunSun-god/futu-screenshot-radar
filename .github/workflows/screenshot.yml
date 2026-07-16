@@ -1,0 +1,54 @@
+name: Capture screenshot
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  screenshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.7.0
+          run_install: false
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright Chromium
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Capture screenshot
+        run: |
+          node screenshot.js "https://news.futunn.com/hk/main/live?chain_id=pQ0K_pS2tp94iH.1l5esi8&global_content=%7B%22promote_id%22%3A13766,%22sub_promote_id%22%3A1,%22f%22%3A%22nn%2Fhk%22%7D&lang=zh-hk"
+
+      - name: Commit screenshot to main
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add screenshot.png
+
+          if git diff --cached --quiet; then
+            echo "Screenshot is unchanged; nothing to commit."
+            exit 0
+          fi
+
+          git commit -m "Update screenshot"
+          git push origin HEAD:main
