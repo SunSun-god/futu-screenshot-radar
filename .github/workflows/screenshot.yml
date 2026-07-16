@@ -36,11 +36,19 @@ jobs:
         run: pnpm exec playwright install --with-deps chromium
 
       - name: Capture screenshot
+        id: capture
+        continue-on-error: true
         run: |
           node screenshot.js "https://news.futunn.com/hk/main/live?chain_id=pQ0K_pS2tp94iH.1l5esi8&global_content=%7B%22promote_id%22%3A13766,%22sub_promote_id%22%3A1,%22f%22%3A%22nn%2Fhk%22%7D&lang=zh-hk"
 
       - name: Commit screenshot to main
+        if: always()
         run: |
+          if [ ! -f screenshot.png ]; then
+            echo "No screenshot.png was produced."
+            exit 0
+          fi
+
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add screenshot.png
@@ -52,3 +60,9 @@ jobs:
 
           git commit -m "Update screenshot"
           git push origin HEAD:main
+
+      - name: Report capture failure
+        if: steps.capture.outcome == 'failure'
+        run: |
+          echo "Screenshot capture failed; the error screenshot was committed when available."
+          exit 1
