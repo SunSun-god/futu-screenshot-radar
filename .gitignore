@@ -1,0 +1,12 @@
+node_modules/
+screenshot.png
+outputs/
+work/
+*.zip
+*.log
+.agents/
+.codex/
+playwright-report/
+test-results/
+.DS_Store
+Thumbs.db
