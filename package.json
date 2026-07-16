@@ -1,10 +1,10 @@
 {
-  "name": "playwright-full-page-screenshot",
+  "name": "futu-orange-alert-radar",
   "version": "1.0.0",
   "private": true,
-  "description": "Render a JavaScript page, scroll through lazy-loaded content, and take a full-page screenshot.",
+  "description": "Render Futu 7x24, scroll to the true bottom, and export structured orange alerts.",
   "scripts": {
-    "screenshot": "node screenshot.js"
+    "radar": "node radar.js"
   },
   "dependencies": {
     "playwright": "1.61.1"
