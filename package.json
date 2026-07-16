@@ -1,0 +1,12 @@
+{
+  "name": "playwright-full-page-screenshot",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Render a JavaScript page, scroll through lazy-loaded content, and take a full-page screenshot.",
+  "scripts": {
+    "screenshot": "node screenshot.js"
+  },
+  "dependencies": {
+    "playwright": "1.61.1"
+  }
+}
