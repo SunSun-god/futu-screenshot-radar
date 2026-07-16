@@ -1,22 +1,43 @@
-# Playwright 完整網頁截圖工具
+# Futu Orange Alert Radar
 
-這個工具會用真正的 Chromium render 網頁，逐段向下捲動並等待 lazy loading／infinite scroll。只有在抵達頁面底部，而且頁面總高度連續 5 次沒有增加後，才會截取完整頁面。
+This repository is the extraction layer for the Sun Sun News priority-news radar.
 
-## 安裝
+Every 30 minutes, GitHub Actions:
 
-需要 Node.js 18 或以上版本。
+1. launches a real headless Chromium browser;
+2. renders the Futu 7×24 live-news page;
+3. scrolls until the page reaches a stable true bottom;
+4. extracts only orange alert time, title, and body text;
+5. writes structured JSON to `data/latest.json`;
+6. updates `data/processed.json` so the same alert is not treated as new twice.
 
-```powershell
-npm install
-npx playwright install chromium
+The repository does **not** classify, verify, rewrite, or publish news. Futu alerts are leads only and must never be used as the formal source of a Sun Sun News article.
+
+## Output
+
+`data/latest.json` contains:
+
+- `generated_at`
+- `source_page`
+- `items`: rolling recent structured alerts
+- `new_items`: alerts first observed in the current run
+- run counts and status
+
+Each alert contains only:
+
+- stable `id`
+- `time`
+- `title`
+- `body`
+- `first_seen_at`
+- `last_seen_at`
+
+## Schedule
+
+Workflow: `.github/workflows/radar.yml`
+
+```text
+0,30 * * * *
 ```
 
-## 執行
-
-```powershell
-node screenshot.js "https://example.com"
-```
-
-每次執行都會覆寫目前目錄內的 `screenshot.png`。
-
-若網站回傳 HTTP 錯誤、持續無限載入，或截圖失敗，程式會以非零狀態結束並顯示真實錯誤；只要頁面仍可存取，也會嘗試把當下內容保存為 `screenshot.png`。
+GitHub Actions cron is UTC-based. The workflow runs at minute 00 and 30 of every hour.
